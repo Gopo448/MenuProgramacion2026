@@ -1,17 +1,18 @@
+# valor especial para salir desde cualquier submenu
 SALIR = "SALIR"
 
 
-# Pausa la pantalla
+# espera a que el usuario presione enter
 def pausa():
     input("\nEnter para continuar...")
 
 
-# Muestra un titulo simple
+# muestra un titulo con bordes
 def encabezado(titulo):
     print(f"\n===== {titulo} =====")
 
 
-# Pide un numero entero
+# pide un numero entero al usuario
 def pedir_entero(mensaje="Ingrese un numero: "):
     texto = input(mensaje)
     if texto.strip() == "":
@@ -19,15 +20,15 @@ def pedir_entero(mensaje="Ingrese un numero: "):
     return int(texto)
 
 
-# Pide varios numeros
+# pide varios numeros separados por coma
 def pedir_lista():
     texto = input("Valores separados por coma: ")
     if texto.strip() == "":
         return []
-    return [int(valor.strip()) for valor in texto.split(",")]
+    return [int(x.strip()) for x in texto.split(",")]
 
 
-# Muestra opciones numeradas
+# muestra las opciones del menu y devuelve la opcion elegida
 def mostrar_menu(titulo, opciones, volver=True):
     encabezado(titulo)
     for numero, texto in opciones:

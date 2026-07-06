@@ -1,12 +1,10 @@
-# Busca el arbol de menor costo
+# busca el arbol de expansion minima desde un nodo
 def prim_mst(grafo, inicio):
-    # Guarda los nodos visitados
     visitados = {inicio}
     aristas = []
     total = 0
 
     while len(visitados) < len(grafo):
-        # Busca la arista menor
         candidata = None
         for origen in visitados:
             for destino, peso in grafo[origen]:
@@ -21,3 +19,36 @@ def prim_mst(grafo, inicio):
         total += peso
 
     return aristas, total
+
+
+# busca la ruta mas corta entre dos nodos usando dijkstra
+def dijkstra(grafo, inicio, destino):
+    distancias = {nodo: float("inf") for nodo in grafo}
+    distancias[inicio] = 0
+    anteriores = {nodo: None for nodo in grafo}
+    pendientes = list(grafo.keys())
+
+    while pendientes:
+        # toma el nodo con menor distancia
+        actual = min(pendientes, key=lambda n: distancias[n])
+        if distancias[actual] == float("inf"):
+            break
+        pendientes.remove(actual)
+
+        for vecino, peso in grafo[actual]:
+            nueva = distancias[actual] + peso
+            if nueva < distancias[vecino]:
+                distancias[vecino] = nueva
+                anteriores[vecino] = actual
+
+    # reconstruye el camino
+    camino = []
+    nodo = destino
+    while nodo is not None:
+        camino.insert(0, nodo)
+        nodo = anteriores[nodo]
+
+    if distancias[destino] == float("inf"):
+        return None, float("inf")
+
+    return camino, distancias[destino]

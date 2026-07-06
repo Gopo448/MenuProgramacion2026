@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menu de Programacion 2026</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .ventana {
+      width: 480px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .header {
+      background: #1a5276;
+      color: white;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header .back {
+      cursor: pointer;
+      font-size: 22px;
+      display: none;
+    }
+    .header .back:hover { opacity: 0.8; }
+    .header h1 { font-size: 15px; font-weight: 500; flex: 1; }
+    .header span { font-size: 12px; opacity: 0.65; }
+
+    .footer {
+      background: #1a5276;
+      color: white;
+      font-size: 11px;
+      padding: 8px 20px;
+      text-align: center;
+    }
+
+    .screen { display: none; background: #f9f9f9; }
+    .screen.active { display: block; }
+
+    /* grid principal */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 18px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+    .card:hover { border-color: #1a5276; transform: translateY(-2px); }
+    .card i { font-size: 26px; display: block; margin-bottom: 8px; }
+    .card .label { font-size: 13px; font-weight: 500; color: #222; }
+    .card .sub { font-size: 11px; color: #888; margin-top: 3px; }
+    .azul i { color: #1a5276; }
+    .verde i { color: #1e8449; }
+    .card.ancho { grid-column: span 3; }
+    .card.salir { grid-column: span 3; background: #fdf0f0; border-color: #f5b7b1; }
+    .card.salir i { color: #c0392b; }
+    .card.salir .label { color: #c0392b; }
+
+    /* submenu */
+    .submenu { padding: 16px 20px; }
+
+    .tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+    .tab {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid #ddd;
+      background: white;
+      color: #555;
+    }
+    .tab.active { background: #1a5276; color: white; border-color: #1a5276; }
+    .tab:hover:not(.active) { border-color: #1a5276; color: #1a5276; }
+
+    .ops {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .ops.tres { grid-template-columns: repeat(3, 1fr); }
+
+    .op-btn {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 16px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+    .op-btn:hover { border-color: #1a5276; transform: translateY(-1px); }
+    .op-btn i { font-size: 22px; color: #1a5276; display: block; margin-bottom: 6px; }
+    .op-btn.verde-ic i { color: #1e8449; }
+    .op-btn .op-label { font-size: 12px; color: #333; }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+    .input-row input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+    }
+    .input-row input:focus { border-color: #1a5276; }
+    .input-row button {
+      padding: 8px 16px;
+      background: #1a5276;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .input-row button:hover { background: #154360; }
+
+    .output {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 12px;
+      min-height: 52px;
+    }
+    .out-label { font-size: 11px; color: #aaa; margin-bottom: 4px; }
+    .out-value { font-size: 13px; color: #555; font-family: monospace; }
+
+    /* validaciones */
+    .val-list { display: flex; flex-direction: column; gap: 10px; }
+    .val-item {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .val-item:hover { border-color: #1a5276; }
+    .val-item > i:first-child { font-size: 20px; color: #1a5276; }
+    .val-text { flex: 1; }
+    .val-name { font-size: 13px; font-weight: 500; color: #222; }
+    .val-desc { font-size: 11px; color: #888; margin-top: 2px; }
+    .val-item .ti-chevron-right { color: #ccc; font-size: 16px; }
+
+    /* grafo */
+    .grafo-svg {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      background: white;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+<div class="ventana">
+
+  <div class="header" id="header">
+    <i class="ti ti-arrow-left back" id="btnBack" onclick="volver()"></i>
+    <h1 id="headerTitle">Menu de Programacion 2026</h1>
+    <span>Python 3</span>
+  </div>
+
+  <!-- pantalla principal -->
+  <div class="screen active" id="screenMain">
+    <div class="grid">
+      <div class="card azul" onclick="ir('Pilas','pilas')">
+        <i class="ti ti-stack-2"></i>
+        <div class="label">Pilas</div>
+        <div class="sub">Estática / Dinámica</div>
+      </div>
+      <div class="card azul" onclick="ir('Colas','colas')">
+        <i class="ti ti-arrows-right-left"></i>
+        <div class="label">Colas</div>
+        <div class="sub">Estática / Dinámica</div>
+      </div>
+      <div class="card azul" onclick="ir('Listas','listas')">
+        <i class="ti ti-link"></i>
+        <div class="label">Listas</div>
+        <div class="sub">Simple / Doble</div>
+      </div>
+      <div class="card verde" onclick="ir('Ordenamientos','ordenamientos')">
+        <i class="ti ti-sort-ascending"></i>
+        <div class="label">Ordenamientos</div>
+        <div class="sub">Bubble, Quick, Merge...</div>
+      </div>
+      <div class="card verde" onclick="ir('Busquedas','busquedas')">
+        <i class="ti ti-search"></i>
+        <div class="label">Busquedas</div>
+        <div class="sub">Lineal / Binaria</div>
+      </div>
+      <div class="card verde" onclick="ir('Grafos','grafos')">
+        <i class="ti ti-chart-dots"></i>
+        <div class="label">Grafos</div>
+        <div class="sub">Prim MST</div>
+      </div>
+      <div class="card azul ancho" onclick="ir('Validaciones','validaciones')">
+        <i class="ti ti-shield-check"></i>
+        <div class="label">Validaciones</div>
+        <div class="sub">Enteros, Reales, Email, Hora, URL</div>
+      </div>
+      <div class="card salir" onclick="confirm('¿Salir del programa?') && window.close()">
+        <i class="ti ti-door-exit"></i>
+        <div class="label">Salir</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- pilas -->
+  <div class="screen" id="screenPilas">
+    <div class="submenu">
+      <div class="tabs">
+        <div class="tab active" onclick="activarTab(this,'pilas','estatica')">Estática</div>
+        <div class="tab" onclick="activarTab(this,'pilas','dinamica')">Dinámica</div>
+      </div>
+      <div class="input-row">
+        <input type="number" placeholder="Valor..." id="inputPilas">
+        <button onclick="opPila('push')">Push</button>
+      </div>
+      <div class="ops">
+        <div class="op-btn" onclick="opPila('push')"><i class="ti ti-circle-plus"></i><div class="op-label">Push</div></div>
+        <div class="op-btn" onclick="opPila('pop')"><i class="ti ti-circle-minus"></i><div class="op-label">Pop</div></div>
+        <div class="op-btn" onclick="opPila('peek')"><i class="ti ti-eye"></i><div class="op-label">Peek</div></div>
+        <div class="op-btn" onclick="opPila('mostrar')"><i class="ti ti-list"></i><div class="op-label">Mostrar</div></div>
+      </div>
+      <div class="output" id="outPilas"><div class="out-label">resultado</div><div class="out-value">—</div></div>
+    </div>
+  </div>
+
+  <!-- colas -->
+  <div class="screen" id="screenColas">
+    <div class="submenu">
+      <div class="tabs">
+        <div class="tab active" onclick="activarTab(this,'colas','estatica')">Estática</div>
+        <div class="tab" onclick="activarTab(this,'colas','dinamica')">Dinámica</div>
+      </div>
+      <div class="input-row">
+        <input type="number" placeholder="Valor..." id="inputColas">
+        <button onclick="opCola('enqueue')">Enqueue</button>
+      </div>
+      <div class="ops tres">
+        <div class="op-btn" onclick="opCola('enqueue')"><i class="ti ti-circle-plus"></i><div class="op-label">Enqueue</div></div>
+        <div class="op-btn" onclick="opCola('dequeue')"><i class="ti ti-circle-minus"></i><div class="op-label">Dequeue</div></div>
+        <div class="op-btn" onclick="opCola('mostrar')"><i class="ti ti-list"></i><div class="op-label">Mostrar</div></div>
+      </div>
+      <div class="output" id="outColas"><div class="out-label">resultado</div><div class="out-value">—</div></div>
+    </div>
+  </div>
+
+  <!-- listas -->
+  <div class="screen" id="screenListas">
+    <div class="submenu">
+      <div class="tabs">
+        <div class="tab active" onclick="activarTab(this,'listas','simple')">Simple</div>
+        <div class="tab" onclick="activarTab(this,'listas','doble')">Doble</div>
+      </div>
+      <div class="input-row">
+        <input type="number" placeholder="Valor..." id="inputListas">
+        <button onclick="opLista('insertar')">Insertar</button>
+      </div>
+      <div class="ops">
+        <div class="op-btn" onclick="opLista('insertar')"><i class="ti ti-circle-plus"></i><div class="op-label">Insertar</div></div>
+        <div class="op-btn" onclick="opLista('eliminar')"><i class="ti ti-circle-minus"></i><div class="op-label">Eliminar</div></div>
+        <div class="op-btn" onclick="opLista('buscar')"><i class="ti ti-search"></i><div class="op-label">Buscar</div></div>
+        <div class="op-btn" onclick="opLista('mostrar')"><i class="ti ti-list"></i><div class="op-label">Mostrar</div></div>
+      </div>
+      <div class="output" id="outListas"><div class="out-label">resultado</div><div class="out-value">—</div></div>
+    </div>
+  </div>
+
+  <!-- ordenamientos -->
+  <div class="screen" id="screenOrdenamientos">
+    <div class="submenu">
+      <div class="input-row">
+        <input type="text" placeholder="ej: 5, 3, 8, 1, 4" id="inputOrden">
+      </div>
+      <div class="ops tres">
+        <div class="op-btn" onclick="ordenar('bubble')"><i class="ti ti-sort-ascending"></i><div class="op-label">Bubble</div></div>
+        <div class="op-btn" onclick="ordenar('selection')"><i class="ti ti-selector"></i><div class="op-label">Selection</div></div>
+        <div class="op-btn" onclick="ordenar('quick')"><i class="ti ti-bolt"></i><div class="op-label">Quick</div></div>
+        <div class="op-btn" onclick="ordenar('shaker')"><i class="ti ti-arrows-up-down"></i><div class="op-label">Shaker</div></div>
+        <div class="op-btn" onclick="ordenar('merge')"><i class="ti ti-git-merge"></i><div class="op-label">Merge</div></div>
+        <div class="op-btn" onclick="ordenar('shell')"><i class="ti ti-terminal"></i><div class="op-label">Shell</div></div>
+        <div class="op-btn" onclick="ordenar('gnome')"><i class="ti ti-robot"></i><div class="op-label">Gnome</div></div>
+        <div class="op-btn" onclick="ordenar('insertion')"><i class="ti ti-indent-increase"></i><div class="op-label">Inserción</div></div>
+        <div class="op-btn" onclick="ordenar('comb')"><i class="ti ti-comb"></i><div class="op-label">Comb</div></div>
+      </div>
+      <div class="output" id="outOrden"><div class="out-label">resultado</div><div class="out-value">—</div></div>
+    </div>
+  </div>
+
+  <!-- busquedas -->
+  <div class="screen" id="screenBusquedas">
+    <div class="submenu">
+      <div class="tabs">
+        <div class="tab active" onclick="activarTab(this,'busq','lineal')">Lineal</div>
+        <div class="tab" onclick="activarTab(this,'busq','binaria')">Binaria</div>
+      </div>
+      <div class="input-row">
+        <input type="text" placeholder="Lista: 3, 5, 1, 8" id="inputBusqLista">
+      </div>
+      <div class="input-row">
+        <input type="number" placeholder="Valor a buscar..." id="inputBusqVal">
+        <button onclick="buscar(tabActual.busq||'lineal')">Buscar</button>
+      </div>
+      <div class="output" id="outBusquedas"><div class="out-label">resultado</div><div class="out-value">—</div></div>
+    </div>
+  </div>
+
+  <!-- grafos -->
+  <div class="screen" id="screenGrafos">
+    <div class="submenu">
+
+      <!-- grafo visual con ciudades reales -->
+      <svg viewBox="0 0 440 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;background:white;border:1px solid #ddd;border-radius:10px;margin-bottom:12px;">
+
+        <!-- lineas de conexion -->
+        <!-- Ixtlahuaca(80,60) - Toluca(80,180) -->
+        <line x1="80" y1="60" x2="80" y2="180" stroke="#aaa" stroke-width="1.5"/>
+        <text x="52" y="125" font-size="9" fill="#888">37 km</text>
+
+        <!-- Ixtlahuaca(80,60) - CDMX(260,130) -->
+        <line x1="80" y1="60" x2="260" y2="130" stroke="#aaa" stroke-width="1.5"/>
+        <text x="158" y="82" font-size="9" fill="#888">72 km</text>
+
+        <!-- Ixtlahuaca(80,60) - Jiquipilco(180,200) -->
+        <line x1="80" y1="60" x2="180" y2="200" stroke="#aaa" stroke-width="1.5"/>
+        <text x="112" y="148" font-size="9" fill="#888">13 km</text>
+
+        <!-- Jocotitlan(340,50) - CDMX(260,130) -->
+        <line x1="340" y1="50" x2="260" y2="130" stroke="#aaa" stroke-width="1.5"/>
+        <text x="308" y="82" font-size="9" fill="#888">80 km</text>
+
+        <!-- CDMX(260,130) - Jiquipilco(180,200) -->
+        <line x1="260" y1="130" x2="180" y2="200" stroke="#aaa" stroke-width="1.5"/>
+        <text x="228" y="178" font-size="9" fill="#888">76 km</text>
+
+        <!-- CDMX(260,130) - Metepec(360,200) -->
+        <line x1="260" y1="130" x2="360" y2="200" stroke="#aaa" stroke-width="1.5"/>
+        <text x="318" y="158" font-size="9" fill="#888">65 km</text>
+
+        <!-- Jiquipilco(180,200) - Metepec(360,200) -->
+        <line x1="180" y1="200" x2="360" y2="200" stroke="#aaa" stroke-width="1.5"/>
+        <text x="262" y="218" font-size="9" fill="#888">46 km</text>
+
+        <!-- nodos -->
+        <!-- Ixtlahuaca -->
+        <ellipse cx="80" cy="60" rx="38" ry="18" fill="#1a5276"/>
+        <text x="80" y="64" text-anchor="middle" font-size="9" fill="white" font-weight="500">Ixtlahuaca</text>
+
+        <!-- Jocotitlan -->
+        <ellipse cx="340" cy="50" rx="38" ry="18" fill="#1a5276"/>
+        <text x="340" y="54" text-anchor="middle" font-size="9" fill="white" font-weight="500">Jocotitlán</text>
+
+        <!-- CDMX -->
+        <ellipse cx="260" cy="130" rx="28" ry="18" fill="#1a5276"/>
+        <text x="260" y="134" text-anchor="middle" font-size="9" fill="white" font-weight="500">CDMX</text>
+
+        <!-- Toluca -->
+        <ellipse cx="80" cy="180" rx="28" ry="18" fill="#1e8449"/>
+        <text x="80" y="184" text-anchor="middle" font-size="9" fill="white" font-weight="500">Toluca</text>
+
+        <!-- Jiquipilco -->
+        <ellipse cx="180" cy="200" rx="36" ry="18" fill="#1e8449"/>
+        <text x="180" y="204" text-anchor="middle" font-size="9" fill="white" font-weight="500">Jiquipilco</text>
+
+        <!-- Metepec -->
+        <ellipse cx="360" cy="200" rx="30" ry="18" fill="#1e8449"/>
+        <text x="360" y="204" text-anchor="middle" font-size="9" fill="white" font-weight="500">Metepec</text>
+      </svg>
+
+      <!-- controles -->
+      <div class="ops tres" style="margin-bottom:10px;">
+        <div class="op-btn verde-ic" onclick="verConexiones()"><i class="ti ti-chart-dots"></i><div class="op-label">Ver conexiones</div></div>
+        <div class="op-btn verde-ic" onclick="ejecutarPrim()"><i class="ti ti-tree"></i><div class="op-label">Arbol minimo</div></div>
+        <div class="op-btn verde-ic" onclick="rutaCorta()"><i class="ti ti-route"></i><div class="op-label">Ruta corta</div></div>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-bottom:6px; align-items:center;">
+        <span style="font-size:12px;color:#888;white-space:nowrap;">Arbol desde:</span>
+        <select id="selectPrim" style="flex:1; padding:6px; border:1px solid #ddd; border-radius:8px; font-size:12px;"></select>
+      </div>
+      <div style="display:flex; gap:8px; margin-bottom:12px; align-items:center;">
+        <span style="font-size:12px;color:#888;white-space:nowrap;">Ruta de:</span>
+        <select id="selectInicio" style="flex:1; padding:6px; border:1px solid #ddd; border-radius:8px; font-size:12px;"></select>
+        <span style="font-size:12px;color:#888;">a</span>
+        <select id="selectFin" style="flex:1; padding:6px; border:1px solid #ddd; border-radius:8px; font-size:12px;"></select>
+      </div>
+
+      <div class="output" id="outGrafos"><div class="out-label">resultado</div><div class="out-value">—</div></div>
+    </div>
+  </div>
+
+  <!-- validaciones -->
+  <div class="screen" id="screenValidaciones">
+    <div class="submenu">
+      <div class="val-list">
+        <div class="val-item" onclick="ir('Entero','valEntero')">
+          <i class="ti ti-number"></i>
+          <div class="val-text"><div class="val-name">Entero</div><div class="val-desc">Verifica si un valor es entero (1-3999)</div></div>
+          <i class="ti ti-chevron-right"></i>
+        </div>
+        <div class="val-item" onclick="ir('Decimal','valDecimal')">
+          <i class="ti ti-decimal"></i>
+          <div class="val-text"><div class="val-name">Decimal</div><div class="val-desc">Verifica si un valor es número real</div></div>
+          <i class="ti ti-chevron-right"></i>
+        </div>
+        <div class="val-item" onclick="ir('Hora','valHora')">
+          <i class="ti ti-clock"></i>
+          <div class="val-text"><div class="val-name">Hora</div><div class="val-desc">Valida formato hh:mm</div></div>
+          <i class="ti ti-chevron-right"></i>
+        </div>
+        <div class="val-item" onclick="ir('Correo','valCorreo')">
+          <i class="ti ti-mail"></i>
+          <div class="val-text"><div class="val-name">Correo</div><div class="val-desc">Valida gmail, hotmail o yahoo</div></div>
+          <i class="ti ti-chevron-right"></i>
+        </div>
+        <div class="val-item" onclick="ir('Página Web','valWeb')">
+          <i class="ti ti-world"></i>
+          <div class="val-text"><div class="val-name">Página Web</div><div class="val-desc">Valida www. con dominio .com .mx .org</div></div>
+          <i class="ti ti-chevron-right"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- val entero -->
+  <div class="screen" id="screenValEntero">
+    <div class="submenu">
+      <div class="input-row">
+        <input type="text" placeholder="Número del 1 al 3999..." id="inputValEntero">
+        <button onclick="validar('entero')">Validar</button>
+      </div>
+      <div class="output" id="outValEntero"><div class="out-label">resultado</div><div class="out-value">—</div></div>
+    </div>
+  </div>
+
+  <!-- val decimal -->
+  <div class="screen" id="screenValDecimal">
+    <div class="submenu">
+      <div class="input-row">
+        <input type="text" placeholder="ej: 3.14" id="inputValDecimal">
+        <button onclick="validar('decimal')">Validar</button>
+      </div>
+      <div class="output" id="outValDecimal"><div class="out-label">resultado</div><div class="out-value">—</div></div>
+    </div>
+  </div>
+
+  <!-- val hora -->
+  <div class="screen" id="screenValHora">
+    <div class="submenu">
+      <div class="input-row">
+        <input type="text" placeholder="hh:mm" id="inputValHora">
+        <button onclick="validar('hora')">Validar</button>
+      </div>
+      <div class="output" id="outValHora"><div class="out-label">resultado</div><div class="out-value">—</div></div>
+    </div>
+  </div>
+
+  <!-- val correo -->
+  <div class="screen" id="screenValCorreo">
+    <div class="submenu">
+      <div class="input-row">
+        <input type="text" placeholder="ejemplo@gmail.com" id="inputValCorreo">
+        <button onclick="validar('correo')">Validar</button>
+      </div>
+      <div class="output" id="outValCorreo"><div class="out-label">resultado</div><div class="out-value">—</div></div>
+    </div>
+  </div>
+
+  <!-- val web -->
+  <div class="screen" id="screenValWeb">
+    <div class="submenu">
+      <div class="input-row">
+        <input type="text" placeholder="www.ejemplo.com" id="inputValWeb">
+        <button onclick="validar('web')">Validar</button>
+      </div>
+      <div class="output" id="outValWeb"><div class="out-label">resultado</div><div class="out-value">—</div></div>
+    </div>
+  </div>
+
+  <div class="footer">Oliver González Prieto — ING. Inteligencia Artificial y Ciencia de Datos</div>
+</div>
+
+<script>
+  let historial = ['Main'];
+  let tabActual = { pilas: 'estatica', colas: 'estatica', listas: 'simple', arboles: 'binario' };
+
+  function ir(titulo, pantalla) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const id = 'screen' + pantalla.charAt(0).toUpperCase() + pantalla.slice(1);
+    document.getElementById(id).classList.add('active');
+    historial.push({ titulo, pantalla });
+    document.getElementById('headerTitle').textContent = titulo;
+    document.getElementById('btnBack').style.display = 'block';
+    if (pantalla === 'grafos') cargarCiudades();
+  }
+
+  function volver() {
+    historial.pop();
+    const prev = historial[historial.length - 1];
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    if (prev === 'Main') {
+      document.getElementById('screenMain').classList.add('active');
+      document.getElementById('headerTitle').textContent = 'Menu de Programacion 2026';
+      document.getElementById('btnBack').style.display = 'none';
+    } else {
+      const id = 'screen' + prev.pantalla.charAt(0).toUpperCase() + prev.pantalla.slice(1);
+      document.getElementById(id).classList.add('active');
+      document.getElementById('headerTitle').textContent = prev.titulo;
+    }
+  }
+
+  function activarTab(el, grupo, valor) {
+    el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    if (grupo) tabActual[grupo] = valor;
+  }
+
+  function mostrar(id, texto, ok) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.querySelector('.out-value').textContent = texto;
+    el.querySelector('.out-value').style.color = ok === false ? '#c0392b' : ok === true ? '#1e8449' : '#333';
+  }
+
+  async function api(url, body) {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    return res.json();
+  }
+
+  // pilas
+  async function opPila(operacion) {
+    const tipo = tabActual.pilas;
+    const valor = document.getElementById('inputPilas').value;
+    const data = await api(`/pilas/${tipo}/${operacion}`, { valor });
+    mostrar('outPilas', data.resultado || data.error);
+  }
+
+  // colas
+  async function opCola(operacion) {
+    const tipo = tabActual.colas;
+    const valor = document.getElementById('inputColas').value;
+    const data = await api(`/colas/${tipo}/${operacion}`, { valor });
+    mostrar('outColas', data.resultado || data.error);
+  }
+
+  // listas
+  async function opLista(operacion) {
+    const tipo = tabActual.listas;
+    const valor = document.getElementById('inputListas').value;
+    const data = await api(`/listas/${tipo}/${operacion}`, { valor });
+    mostrar('outListas', data.resultado || data.error);
+  }
+
+  // ordenamientos
+  async function ordenar(algoritmo) {
+    const texto = document.getElementById('inputOrden').value;
+    const valores = texto.split(',').map(x => x.trim()).filter(x => x);
+    const data = await api(`/ordenar/${algoritmo}`, { valores });
+    mostrar('outOrden', data.resultado || data.error);
+  }
+
+  // busquedas
+  async function buscar(tipo) {
+    const listaTexto = document.getElementById('inputBusqLista').value;
+    const lista = listaTexto.split(',').map(x => x.trim()).filter(x => x);
+    const objetivo = document.getElementById('inputBusqVal').value;
+    const data = await api(`/buscar/${tipo}`, { lista, objetivo });
+    mostrar('outBusquedas', data.resultado || data.error);
+  }
+
+  // arboles
+  async function opArbol(operacion) {
+    const tipo = tabActual.arboles;
+    const valor = document.getElementById('inputArboles').value;
+    const data = await api(`/arboles/${tipo}/${operacion}`, { valor });
+    mostrar('outArboles', data.resultado || data.error);
+  }
+
+  // grafos
+  let ciudadesLista = [];
+  async function cargarCiudades() {
+    const res = await fetch('/grafos/ciudades');
+    const data = await res.json();
+    ciudadesLista = data.ciudades;
+    ['selectInicio', 'selectFin', 'selectPrim'].forEach(id => {
+      const sel = document.getElementById(id);
+      if (!sel) return;
+      sel.innerHTML = ciudadesLista.map(c => `<option value="${c}">${c}</option>`).join('');
+    });
+  }
+
+  async function verConexiones() {
+    const res = await fetch('/grafos/conexiones');
+    const data = await res.json();
+    mostrar('outGrafos', data.resultado);
+  }
+
+  async function ejecutarPrim() {
+    const inicio = document.getElementById('selectPrim').value;
+    const data = await api('/grafos/prim', { inicio });
+    mostrar('outGrafos', data.resultado || data.error);
+  }
+
+  async function rutaCorta() {
+    const inicio = document.getElementById('selectInicio').value;
+    const fin = document.getElementById('selectFin').value;
+    const data = await api('/grafos/ruta', { inicio, fin });
+    mostrar('outGrafos', data.resultado || data.error);
+  }
+
+  // validaciones
+  async function validar(tipo) {
+    const inputs = { entero:'inputValEntero', decimal:'inputValDecimal', hora:'inputValHora', correo:'inputValCorreo', web:'inputValWeb' };
+    const outputs = { entero:'outValEntero', decimal:'outValDecimal', hora:'outValHora', correo:'outValCorreo', web:'outValWeb' };
+    const valor = document.getElementById(inputs[tipo]).value;
+    const data = await api(`/validar/${tipo}`, { valor });
+    mostrar(outputs[tipo], data.resultado || data.error, data.ok);
+  }
+</script>
+</body>
+</html>

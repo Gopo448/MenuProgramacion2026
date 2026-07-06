@@ -3,9 +3,9 @@ from pilas import PilaEstatica, PilaDinamica
 from colas import ColaEstatica, ColaDinamica
 from listas import ListaSimple, ListaDoble
 from busquedas import busqueda_lineal, busqueda_binaria
-from ordenamientos import bubble_sort, selection_sort, quick_sort, cocktail_sort, merge_sort, gnome_sort, shell_sort
+from ordenamientos import bubble_sort, selection_sort, quick_sort, cocktail_sort, merge_sort, gnome_sort, shell_sort, insertion_sort, comb_sort
 from arboles import ArbolBinario, ArbolBST
-from prim import prim_mst, dijkstra
+from prim import prim_mst, dijkstra, floyd_warshall
 from validaciones import validar_entero, validar_decimal, validar_hora, validar_correo, validar_pagina_web
 
 app = Flask(__name__)
@@ -153,6 +153,8 @@ def ordenar(algoritmo):
             "merge":     merge_sort,
             "gnome":     gnome_sort,
             "shell":     shell_sort,
+            "insertion": insertion_sort,
+            "comb":      comb_sort,
         }
         fn = algos.get(algoritmo)
         if fn is None:
@@ -241,7 +243,8 @@ def ruta_corta():
     fin = data.get("fin")
     if inicio not in grafo or fin not in grafo:
         return jsonify({"error": "ciudad no encontrada"})
-    camino, distancia = dijkstra(grafo, inicio, fin)
+    ruta = floyd_warshall(grafo)
+    camino, distancia = ruta(inicio, fin)
     if camino is None:
         return jsonify({"error": "no hay ruta disponible"})
     return jsonify({"resultado": " -> ".join(camino) + f"\nDistancia: {distancia} km"})

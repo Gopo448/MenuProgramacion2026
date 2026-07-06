@@ -77,6 +77,39 @@ def merge_sort(datos):
     return resultado
 
 
+# inserta cada elemento en su lugar correcto
+def insertion_sort(datos):
+    datos = datos[:]
+    for i in range(1, len(datos)):
+        clave = datos[i]
+        j = i - 1
+        while j >= 0 and datos[j] > clave:
+            datos[j + 1] = datos[j]
+            j -= 1
+        datos[j + 1] = clave
+    return datos
+
+
+# ordena con brecha que va reduciendo como un peine
+def comb_sort(datos):
+    datos = datos[:]
+    brecha = len(datos)
+    factor = 1.3
+    ordenado = False
+    while not ordenado:
+        brecha = int(brecha / factor)
+        if brecha <= 1:
+            brecha = 1
+            ordenado = True
+        i = 0
+        while i + brecha < len(datos):
+            if datos[i] > datos[i + brecha]:
+                datos[i], datos[i + brecha] = datos[i + brecha], datos[i]
+                ordenado = False
+            i += 1
+    return datos
+
+
 # Ordena con pasos pequenos
 def gnome_sort(datos):
     datos = datos[:]

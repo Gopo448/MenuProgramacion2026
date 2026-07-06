@@ -1,7 +1,7 @@
 from utils import SALIR, mostrar_menu, pausa, pedir_entero, pedir_lista
 from busquedas import busqueda_binaria, busqueda_lineal
-from ordenamientos import bubble_sort, cocktail_sort, gnome_sort, merge_sort, quick_sort, selection_sort, shell_sort
-from prim import prim_mst, dijkstra
+from ordenamientos import bubble_sort, cocktail_sort, gnome_sort, merge_sort, quick_sort, selection_sort, shell_sort, insertion_sort, comb_sort
+from prim import prim_mst, dijkstra, floyd_warshall
 from validaciones import validar_entero, validar_decimal, validar_hora, validar_correo, validar_pagina_web
 
 
@@ -142,15 +142,21 @@ def menu_insercion():
             ("1", "Bubble Sort"),
             ("2", "Selection Sort"),
             ("3", "Quick Sort"),
+            ("4", "Insertion Sort"),
+            ("5", "Comb Sort"),
         ])
-        if opcion in ("1", "2", "3"):
+        if opcion in ("1", "2", "3", "4", "5"):
             datos = pedir_lista()
             if opcion == "1":
                 print(f"Ordenado: {bubble_sort(datos)}")
             elif opcion == "2":
                 print(f"Ordenado: {selection_sort(datos)}")
-            else:
+            elif opcion == "3":
                 print(f"Ordenado: {quick_sort(datos)}")
+            elif opcion == "4":
+                print(f"Ordenado: {insertion_sort(datos)}")
+            elif opcion == "5":
+                print(f"Ordenado: {comb_sort(datos)}")
             pausa()
         elif opcion == "0":
             return
@@ -263,11 +269,12 @@ def menu_prim():
             if inicio is None or fin is None:
                 print("Opcion no valida.")
             else:
-                camino, distancia = dijkstra(grafo, inicio, fin)
+                ruta = floyd_warshall(grafo)
+                camino, distancia = ruta(inicio, fin)
                 if camino is None:
                     print("No hay ruta disponible.")
                 else:
-                    print(f"\nRuta mas corta de {inicio} a {fin}:")
+                    print(f"\nRuta mas corta (Floyd-Warshall) de {inicio} a {fin}:")
                     print("  " + " -> ".join(camino))
                     print(f"Distancia total: {distancia} km")
             pausa()

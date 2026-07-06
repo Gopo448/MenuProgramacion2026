@@ -96,21 +96,21 @@ def validar_correo(texto):
     return True, f"correo valido: {texto}"
 
 
-# valida que la pagina web inicie con www. y tenga dominio valido
+# valida que la url tenga protocolo y dominio valido
 def validar_pagina_web(texto):
-    if len(texto) < 8:
-        return False, "error: pagina web no valida"
+    if len(texto) < 10:
+        return False, "error: url no valida"
 
-    if not texto.startswith("www."):
-        return False, "error: debe iniciar con www."
+    if not (texto.startswith("http://") or texto.startswith("https://") or texto.startswith("www.")):
+        return False, "error: debe iniciar con http:// https:// o www."
 
-    dominios = [".com", ".mx", ".org"]
+    dominios = [".com", ".mx", ".org", ".net", ".edu"]
     dominio_valido = any(d in texto for d in dominios)
 
     if not dominio_valido:
-        return False, "error: solo se permiten dominios .com .mx o .org"
+        return False, "error: solo se permiten dominios .com .mx .org .net .edu"
 
-    return True, f"pagina web valida: {texto}"
+    return True, f"url valida: {texto}"
 
 
 # pide el valor al usuario y muestra el resultado

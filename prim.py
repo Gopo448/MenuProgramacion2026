@@ -1,3 +1,41 @@
+# calcula rutas mas cortas entre todos los nodos usando floyd-warshall
+def floyd_warshall(grafo):
+    nodos = list(grafo.keys())
+    n = len(nodos)
+    idx = {nodo: i for i, nodo in enumerate(nodos)}
+
+    INF = float("inf")
+    dist = [[INF] * n for _ in range(n)]
+    siguiente = [[None] * n for _ in range(n)]
+
+    for i in range(n):
+        dist[i][i] = 0
+
+    for origen in grafo:
+        for destino, peso in grafo[origen]:
+            i, j = idx[origen], idx[destino]
+            dist[i][j] = peso
+            siguiente[i][j] = destino
+
+    for k in range(n):
+        for i in range(n):
+            for j in range(n):
+                if dist[i][k] + dist[k][j] < dist[i][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+                    siguiente[i][j] = siguiente[i][k]
+
+    def ruta(origen, destino):
+        i, j = idx[origen], idx[destino]
+        if dist[i][j] == INF:
+            return None, INF
+        camino = [origen]
+        while camino[-1] != destino:
+            camino.append(siguiente[idx[camino[-1]]][j])
+        return camino, dist[i][j]
+
+    return ruta
+
+
 # busca el arbol de expansion minima desde un nodo
 def prim_mst(grafo, inicio):
     visitados = {inicio}
